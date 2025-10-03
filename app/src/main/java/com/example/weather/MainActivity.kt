@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weather.screens.WeatherScreen
+import com.example.weather.ui.theme.WeatherAppTheme
 import com.example.weather.ui.theme.WeatherTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WeatherTheme {
+            WeatherAppTheme {
                 WeatherScreen()
             }
         }

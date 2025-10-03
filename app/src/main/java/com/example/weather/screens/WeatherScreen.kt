@@ -1,6 +1,8 @@
 package com.example.weather.screens
 
 import android.R.attr.padding
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,17 +50,13 @@ fun WeatherScreen(model: WeatherViewModel = viewModel()) {
         Box(Modifier
             .padding(padding)
             .fillMaxSize()) {
-            when (val s = state) {
-                is WeatherUiState.Loading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+            AnimatedContent(targetState = state, Modifier.align(Alignment.Center)) { s ->
+                when (s) {
+                    is WeatherUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(
+                        Alignment.Center))
+                    is WeatherUiState.Error -> Text("Ошибка: ${s.message}", modifier = Modifier.align(Alignment.Center))
+                    is WeatherUiState.Ready -> Content(s.data)
                 }
-
-                is WeatherUiState.Error -> {
-                    Text(text = "Error: ${s.message}")
-                    Modifier.align(Alignment.Center)
-                }
-
-                is WeatherUiState.Ready -> Content(s.data)
             }
         }
 
