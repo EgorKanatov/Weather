@@ -1,6 +1,8 @@
 package com.example.weather.screens
 
+import android.media.Image
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,6 +14,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,42 +37,41 @@ import com.example.weather.models.WeatherViewModel
 @Composable
 fun WeatherScreen(model: WeatherViewModel = viewModel()) {
     val state by model.state.collectAsState()
+    Surface(
+        modifier = Modifier.fillMaxSize(),
 
-    Scaffold(
-
-        topBar = {
-            TopAppBar(
-                title = { Text("Москва") },
-                navigationIcon = {
-                    IconButton(onClick = {  }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.location_on_24px),
-                            contentDescription = "Выбрать локацию"
-                        )
+        ) {
+        Image(
+            painterResource(R.drawable.skyblue),
+            null,
+            Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedContent(
+                    targetState = state,
+                    contentAlignment = Alignment.Center,
+                    label = "WeatherStateAnimation"
+                ) { s ->
+                    when (s) {
+                        is WeatherUiState.Loading -> CircularProgressIndicator()
+                        is WeatherUiState.Error -> Text("Ошибка: ${s.message}")
+                        is WeatherUiState.Ready -> WeatherContent(s.data)
                     }
                 }
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-            AnimatedContent(
-                targetState = state,
-                modifier = Modifier.align(Alignment.Center),
-                label = "WeatherStateAnimation"
-            ) { s ->
-                when (s) {
-                    is WeatherUiState.Loading -> CircularProgressIndicator()
-                    is WeatherUiState.Error -> Text("Ошибка: ${s.message}")
-                    is WeatherUiState.Ready -> WeatherContent(s.data)
-                }
             }
+
         }
     }
 }
+
 
 /**
  * Отрисовка успешного состояния погоды.
