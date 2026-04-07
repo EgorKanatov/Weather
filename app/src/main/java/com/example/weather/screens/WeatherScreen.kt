@@ -1,6 +1,8 @@
 package com.example.weather.screens
 
 import android.media.Image
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -28,6 +30,7 @@ import com.example.weather.data.WeatherMappers
 import com.example.weather.data.WeatherResponse
 import com.example.weather.models.WeatherUiState
 import com.example.weather.models.WeatherViewModel
+import java.time.LocalDateTime
 
 /**
  * Главный экран приложения погоды.
@@ -80,6 +83,7 @@ fun WeatherScreen(model: WeatherViewModel = viewModel()) {
  * Использует LazyColumn в качестве корневого элемента для поддержки
  * скролла на небольших экранах при добавлении новых блоков.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherContent(data: WeatherResponse) {
 
@@ -94,8 +98,22 @@ fun WeatherContent(data: WeatherResponse) {
 
         val hourly = data.hourly
         if (hourly?.time != null && hourly.temperatureC != null && hourly.weatherCode != null) {
+
+            val currentDateTime = LocalDateTime.now()
+
+            val startIndex = hourly.time.indexOfFirst { timeString ->
+                LocalDateTime.parse(timeString).isAfter(currentDateTime.minusHours(1))
+            }.takeIf { it >= 0 } ?: 0
+
+            val filteredHourly = Hourly(
+                time = hourly.time.drop(startIndex),
+                temperatureC = hourly.temperatureC.drop(startIndex),
+                weatherCode = hourly.weatherCode.drop(startIndex),
+                precipProbPct = hourly.precipProbPct?.drop(startIndex)
+            )
+
             item {
-                HourlyWeatherCard(hourly)
+                HourlyWeatherCard(filteredHourly)
             }
         }
     }
