@@ -4,6 +4,7 @@ import android.media.Image
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -48,12 +49,13 @@ fun WeatherScreen(model: WeatherViewModel = viewModel()) {
             contentScale = ContentScale.Crop
         )
         Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 48.dp)
         ) {
             Box(
-                contentAlignment = Alignment.Center
             ) {
                 AnimatedContent(
                     targetState = state,
