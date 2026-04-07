@@ -1,6 +1,5 @@
 package com.example.weather.screens
 
-import android.media.Image
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
@@ -17,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,22 +29,25 @@ import com.example.weather.data.WeatherResponse
 import com.example.weather.models.WeatherUiState
 import com.example.weather.models.WeatherViewModel
 import java.time.LocalDateTime
+import java.util.concurrent.ThreadLocalRandom.current
 
 /**
  * Главный экран приложения погоды.
  * Отвечает за подписку на состояние ViewModel и маршрутизацию UI
  * в зависимости от текущего стейта (Загрузка / Ошибка / Данные).
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(model: WeatherViewModel = viewModel()) {
     val state by model.state.collectAsState()
+    val currentCode = (state as? WeatherUiState.Ready)?.data?.current?.weatherCode
     Surface(
         modifier = Modifier.fillMaxSize(),
 
         ) {
         Image(
-            painterResource(R.drawable.skyblue),
+            painter = WeatherMappers.backgroundImagePick(currentCode),
             null,
             Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -124,7 +125,11 @@ fun WeatherContent(data: WeatherResponse) {
  */
 @Composable
 private fun CurrentWeatherCard(current: Current?) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
+        )
+    ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = "${WeatherMappers.emojiForCode(current?.weatherCode)}  ${
@@ -153,7 +158,11 @@ private fun CurrentWeatherCard(current: Current?) {
  */
 @Composable
 private fun HourlyWeatherCard(hourly: Hourly) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
+        )
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Ближайшие часы",
